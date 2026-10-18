@@ -1,0 +1,30 @@
+# 业务员版运行配置（每台业务电脑一份，启动后可在界面里改，自动保存到 operator.yaml）
+#
+# role 本机角色：
+#   psb = 公安系统电脑（跑协调服务 + 公安客户端执行 + 待补录）
+#   pms = 前台电脑（跑 PMS 网页执行 + 开房操作台）
+role: psb
+
+# 前台机填公安电脑的地址；公安机保持本机即可
+coordinator_url: http://127.0.0.1:8765
+
+# 公安机：协调服务监听地址与端口（0.0.0.0 表示对局域网开放，仅供内网使用）
+coordinator_bind: 0.0.0.0
+coordinator_port: 8765
+
+# 已导入模板的本机路径（导入过一次后自动记住，留空则每次启动需手动导入）
+template_path: ""
+
+# 读卡器（前台机生效）：manual=手动输入 | simulate=模拟 | sdk=读卡器DLL
+reader:
+  mode: manual
+  sdk_dll: ""          # sdk 模式填 DLL 路径，如 C:\Readers\Termb.dll
+  com_port: 1001
+
+# 前台机：接管已打开的 PMS 浏览器（Chrome 需带 --remote-debugging-port=9222 启动）
+pms:
+  browser_ws: ""
+
+# 告警：待补录出现时的提醒方式（toast=弹窗 | sound=声音 | both）
+alert:
+  mode: toast

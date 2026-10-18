@@ -1,0 +1,22 @@
+# 管理员版专用配置 —— 只存在于管理员电脑，不随业务员版分发
+#
+# AI 字段映射的使用边界（数据安全承诺）：
+#   AI 只在【录制流程】阶段由管理员使用；业务员日常工作时，
+#   业务员版安装包中不含任何 AI 代码（见 packaging/operator.spec excludes），
+#   客户数据不会被送往任何大模型。
+#
+# LLM 走任意 OpenAI 兼容接口，也可用环境变量覆盖（优先级更高）：
+#   HOTEL_SYNC_LLM_API_KEY / HOTEL_SYNC_LLM_BASE_URL / HOTEL_SYNC_LLM_MODEL
+
+llm:
+  base_url: "https://api.deepseek.com/v1"   # 换成你的接口
+  model: "deepseek-chat"
+  api_key: ""                                # 也可留空，用环境变量传
+
+# 录制工具默认输出位置
+capture:
+  controls_dump: "controls_dump.json"
+  recipe_out: "config/recipes/psb_win.yaml"
+
+# 模板分发目录（export 的 .hstemplate 放这里，发给业务员）
+template_dist_dir: "dist/templates"

@@ -1,0 +1,8 @@
+# HotelSync 依赖（真实运行环境：Windows）
+# 说明：pywinauto 仅 Windows 可用；playwright 装完后需执行 playwright install chromium
+pywinauto>=0.6.8      # 公安旅店系统（Windows 客户端）UI 自动化
+playwright>=1.40      # PMS（网页）自动化
+pyyaml>=6.0           # recipe / 配置文件
+fastapi>=0.110        # 协调服务（跨机部署）
+uvicorn>=0.29
+requests>=2.31        # HTTP 客户端 / LLM 调用

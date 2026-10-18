@@ -1,0 +1,26 @@
+# HotelSync 全局配置（两个版本共用；AI 相关配置在 config/admin.yaml，仅管理员版存在）
+
+coordinator:
+  host: 0.0.0.0
+  port: 8765            # 协调服务端口（PMS 机通过 http://<本机IP>:8765 接入）
+
+db_path: hotel_sync.db  # SQLite 任务库路径
+
+retry:
+  max_attempts: 3       # 自动重试上限（超过后留在待补录清单等人工处理）
+  interval_seconds: 2   # agent 轮询间隔
+
+reader:
+  mode: manual          # simulate=模拟刷证 | manual=手动输入 | sdk=读卡器DLL
+  sdk_dll: ""           # sdk 模式下的 DLL 路径，如 C:\Readers\Termb.dll
+  com_port: 1001
+
+face_verify:
+  # 人证核验（摄像头比对）模式：
+  #   off        = 不涉及
+  #   cooperate  = 配合：流程中插入“等待核验通过”步骤，通过后再继续分发
+  #   skip       = 互斥跳过：检测到核验弹窗时自动关掉/绕过（需确认当地监管允许）
+  mode: off
+
+alert:
+  mode: toast           # toast=弹窗提醒 | sound=声音 | both=都要（待补录出现时触发）

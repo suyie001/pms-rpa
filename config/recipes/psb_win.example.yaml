@@ -1,0 +1,80 @@
+# 公安旅店系统 recipe 模板（Windows 客户端）
+# fields / controls 里的定位方式，用 capture 工具捕获或 AI 建议后替换：
+#   python -m hotel_sync.capture.capturer --title "旅店业" --out config/recipes/psb_win.yaml --ai
+kind: win32
+
+window:
+  title_regex: ".*旅店业.*|.*治安.*"     # 主窗口标题正则，按实际标题改
+
+# 标准字段 → 控件定位（优先 automation_id，其次 name）
+fields:
+  room_no:        {automation_id: "txtRoomNo"}
+  name:           {automation_id: "txtName"}
+  gender:         {automation_id: "cbGender", control_type: "ComboBox"}
+  nation:         {automation_id: "cbNation", control_type: "ComboBox"}
+  id_number:      {automation_id: "txtCardNo"}
+  address:        {automation_id: "txtAddress"}
+  check_in_time:  {automation_id: "dtpInDate"}
+  check_out_time: {automation_id: "dtpOutDate"}
+
+# 按钮 / 菜单
+controls:
+  menu_check_in:   {name: "入住登记"}
+  menu_add_guest:  {name: "增加同住人"}
+  menu_check_out:  {name: "退宿登记"}
+  menu_change_room: {name: "换房登记"}
+  menu_extend:     {name: "续住登记"}
+  btn_save:        {automation_id: "btnSave"}
+
+# 成功判定：任意窗口出现这些文字即视为成功，并自动关掉提示框
+success:
+  dialog_text_regex: "成功|已保存|上报成功"
+
+actions:
+  # 开房/入住：主客人 + 同住人逐个录入后统一保存
+  check_in:
+    steps:
+      - {op: menu, control: menu_check_in}
+      - {op: fill, field: room_no}
+      - op: guest_loop
+        add_guest: menu_add_guest
+        fields: [name, gender, nation, id_number, address, check_in_time, check_out_time]
+      - {op: click, control: btn_save}
+      - {op: wait_success}
+
+  # 增加同住人（晚到客人登记）
+  add_guest:
+    steps:
+      - {op: menu, control: menu_check_in}
+      - {op: fill, field: room_no}
+      - op: guest_loop
+        add_guest: menu_add_guest
+        fields: [name, gender, nation, id_number, address, check_in_time, check_out_time]
+      - {op: click, control: btn_save}
+      - {op: wait_success}
+
+  # 退宿
+  check_out:
+    steps:
+      - {op: menu, control: menu_check_out}
+      - {op: fill, field: room_no}
+      - {op: click, control: btn_save}
+      - {op: wait_success}
+
+  # 换房（不同厂商菜单名不同，按实际改 menu_change_room 的定位）
+  change_room:
+    steps:
+      - {op: menu, control: menu_change_room}
+      - {op: fill, field: old_room_no}
+      - {op: fill, field: room_no}
+      - {op: click, control: btn_save}
+      - {op: wait_success}
+
+  # 续住
+  extend:
+    steps:
+      - {op: menu, control: menu_extend}
+      - {op: fill, field: room_no}
+      - {op: fill, field: action.new_check_out}
+      - {op: click, control: btn_save}
+      - {op: wait_success}

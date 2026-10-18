@@ -1,0 +1,66 @@
+# 网页 PMS recipe 模板
+# 用浏览器 F12 拿到真实选择器后，替换下面各 selector 即可（其余结构不用动）
+# 菜单/按钮如果用点击跳转，把 goto 换成 click 即可
+kind: web
+url: "http://pms.internal/"                 # 你的 PMS 地址
+success_selector: ".el-message--success"    # 出现这个元素视为操作成功（按实际改）
+
+actions:
+  # 开房：一位主客人 + 若干同住人
+  check_in:
+    steps:
+      - {op: goto, url: "http://pms.internal/checkin"}
+      - {op: fill, field: room_no, selector: "#frm-room-no"}
+      - op: guest_loop
+        add_guest_selector: "#btn-add-guest"   # 第 2 位同住人起先点“增加同住人”
+        steps:
+          - {op: fill, field: guest.name, selector: "input[name=guestName]"}
+          - {op: fill, field: guest.id_number, selector: "input[name=guestId]"}
+          - {op: fill, field: guest.gender, selector: "input[name=guestGender]"}
+          - {op: fill, field: guest.nation, selector: "input[name=guestNation]"}
+          - {op: fill, field: guest.address, selector: "input[name=guestAddr]"}
+          - {op: fill, field: guest.check_in_time, selector: "input[name=inDate]"}
+          - {op: fill, field: guest.check_out_time, selector: "input[name=outDate]"}
+      - {op: click, selector: "#btn-submit"}
+      - {op: wait_success}
+
+  # 增加同住人（结构与开房的客人部分相同）
+  add_guest:
+    steps:
+      - {op: goto, url: "http://pms.internal/checkin"}
+      - {op: fill, field: room_no, selector: "#frm-room-no"}
+      - op: guest_loop
+        add_guest_selector: "#btn-add-guest"
+        steps:
+          - {op: fill, field: guest.name, selector: "input[name=guestName]"}
+          - {op: fill, field: guest.id_number, selector: "input[name=guestId]"}
+          - {op: fill, field: guest.gender, selector: "input[name=guestGender]"}
+          - {op: fill, field: guest.nation, selector: "input[name=guestNation]"}
+      - {op: click, selector: "#btn-submit"}
+      - {op: wait_success}
+
+  # 换房：PMS 里把整房换到新房间
+  change_room:
+    steps:
+      - {op: goto, url: "http://pms.internal/change-room"}
+      - {op: fill, field: old_room_no, selector: "#frm-old-room"}
+      - {op: fill, field: room_no, selector: "#frm-new-room"}
+      - {op: click, selector: "#btn-submit"}
+      - {op: wait_success}
+
+  # 续住：延长退房时间
+  extend:
+    steps:
+      - {op: goto, url: "http://pms.internal/extend"}
+      - {op: fill, field: room_no, selector: "#frm-room-no"}
+      - {op: fill, field: action.new_check_out, selector: "#frm-new-checkout"}
+      - {op: click, selector: "#btn-submit"}
+      - {op: wait_success}
+
+  # 退房
+  check_out:
+    steps:
+      - {op: goto, url: "http://pms.internal/checkout"}
+      - {op: fill, field: room_no, selector: "#frm-room-no"}
+      - {op: click, selector: "#btn-submit"}
+      - {op: wait_success}
